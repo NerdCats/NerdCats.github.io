@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>NerdCats Blog</title>
+  <subtitle>Random tech ramblings no one basically cares about</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://nerdcats.github.io/"/>
+  <updated>2016-07-18T19:53:34.123Z</updated>
+  <id>http://nerdcats.github.io/</id>
+  
+  <author>
+    <name>NerdCats</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Asynchrnous Programming in C# Cheat Sheet</title>
+    <link href="http://nerdcats.github.io/2016/07/18/csharpasyncprogcheatsheet/"/>
+    <id>http://nerdcats.github.io/2016/07/18/csharpasyncprogcheatsheet/</id>
+    <published>2016-07-18T17:19:18.000Z</published>
+    <updated>2016-07-18T19:53:34.123Z</updated>
+    
+    <content type="html">&lt;h3 id=&quot;Tip-Dont-go-for-Async-Void&quot;&gt;&lt;a href=&quot;#Tip-Dont-go-for-Async-Void&quot; class=&quot;headerlink&quot; title=&quot;Tip: Dont go for Async Void&quot;&gt;&lt;/a&gt;Tip: Dont go for Async Void&lt;/h3&gt;&lt;p&gt;You get possibly three return types for async methods and those would be &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Task&lt;/li&gt;
+&lt;li&gt;Task &amp;lt; T &amp;gt;&lt;/li&gt;
+&lt;li&gt;void     &lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Its always better if you can avoid the void  &lt;/p&gt;
+&lt;h4 id=&quot;Reason&quot;&gt;&lt;a href=&quot;#Reason&quot; class=&quot;headerlink&quot; title=&quot;Reason:&quot;&gt;&lt;/a&gt;Reason:&lt;/h4&gt;&lt;p&gt;Async Void methods were made possible so one can have async event handlers. Exceptions thrown out of these are actually handled in the Synchronization context that was active at that time, meaning you wont be able to &amp;quot;catch&amp;quot; it with a &amp;quot;catch&amp;quot;. 
+You can definitely catch those in App.UnhandledException or similiar all unhandled exception catching scenarios. Plus, its not testable too.  &lt;/p&gt;
+&lt;p&gt;If you go for returning Task you will see your async methods are returning a Task object which essentially has the exceptions noted inside of it.&lt;/p&gt;
+&lt;h4 id=&quot;Workaround&quot;&gt;&lt;a href=&quot;#Workaround&quot; class=&quot;headerlink&quot; title=&quot;Workaround:&quot;&gt;&lt;/a&gt;Workaround:&lt;/h4&gt;&lt;p&gt;In case of stuff like async event handlers, the best thing to do would be is to put the actual code logic in a separate awaited method so you can test it whenever you want.&lt;/p&gt;
+&lt;h3 id=&quot;Tip-Once-Async-always-go-async&quot;&gt;&lt;a href=&quot;#Tip-Once-Async-always-go-async&quot; class=&quot;headerlink&quot; title=&quot;Tip: Once Async always go async&quot;&gt;&lt;/a&gt;Tip: Once Async always go async&lt;/h3&gt;&lt;p&gt;Async codes are written better if they are written from the top to the bottom in an all async paradigm, meaning its always better to wrap an async method 
+in another async method all the way to the bottom. If you wrap up a little async code in your sync code context, you might end up in a deadlock.&lt;/p&gt;
+&lt;h4 id=&quot;Reason-and-Example&quot;&gt;&lt;a href=&quot;#Reason-and-Example&quot; class=&quot;headerlink&quot; title=&quot;Reason and Example:&quot;&gt;&lt;/a&gt;Reason and Example:&lt;/h4&gt;&lt;figure class=&quot;highlight csharp&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;11&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;12&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;13&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;14&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;15&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;DeadlockDemo&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;async&lt;/span&gt; Task &lt;span class=&quot;title&quot;&gt;DelayAsync&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;&lt;/span&gt;)&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;await&lt;/span&gt; Task.Delay(&lt;span class=&quot;number&quot;&gt;1000&lt;/span&gt;);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;// This method causes a deadlock when called in a GUI or ASP.NET context.&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Test&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;&lt;/span&gt;)&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// Start the delay.&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;var&lt;/span&gt; delayTask = DelayAsync();&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// Wait for the delay to complete.&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    delayTask.Wait();&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &amp;#125;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;This piece of code would end up in a deadlock in GUI or ASP.net apps. Because when you await a Task the current context is captured so it can be resumed 
+on the current context after the awaiting is done. The context is usually the current SynchronizationContext which is essentially the TaskScheduler. In Asp.net 
+or GUI app youre only supposed to run a single chunk of code at a time. In this case the DelayAsync await is completed it is trying to complete the rest 
+of the code after await in the captured context. This context has already a thread in it and waiting for the async call to be finished. They are waiting on 
+each other = deadlock.&lt;/p&gt;
+&lt;p&gt;In case of a console app, this would execute just fine. Because it has a thread pool SynchronizationContext so it would execute the rest of the async method 
+in a separate thread.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A good thing to remember here is that if you await a async method only the first exception occured would be rethrown. If you block in synchronously you&amp;#39;d get 
+an AggregateException with all the exceptions in it&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;Tip-Configuring-await-context&quot;&gt;&lt;a href=&quot;#Tip-Configuring-await-context&quot; class=&quot;headerlink&quot; title=&quot;Tip: Configuring await context&quot;&gt;&lt;/a&gt;Tip: Configuring await context&lt;/h3&gt;&lt;p&gt;When you have a lot of incy wincy bits of async code, your GUI app might end up in a situation where most of the time its busy handling those async events. 
+This can lead to performance issues.&lt;/p&gt;
+&lt;h4 id=&quot;Solution-and-Example&quot;&gt;&lt;a href=&quot;#Solution-and-Example&quot; class=&quot;headerlink&quot; title=&quot;Solution and Example:&quot;&gt;&lt;/a&gt;Solution and Example:&lt;/h4&gt;&lt;p&gt;Using ConfigureAwait at the end of your async call might help you in this case. Follow the following example:&lt;/p&gt;
+&lt;figure class=&quot;highlight csharp&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;async&lt;/span&gt; Task &lt;span class=&quot;title&quot;&gt;MyMethodAsync&lt;/span&gt;(&lt;span class=&quot;params&quot;&gt;&lt;/span&gt;)&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#123;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;// Code here runs in the original context.&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;await&lt;/span&gt; Task.Delay(&lt;span class=&quot;number&quot;&gt;1000&lt;/span&gt;);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;// Code here runs in the original context.&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;await&lt;/span&gt; Task.Delay(&lt;span class=&quot;number&quot;&gt;1000&lt;/span&gt;).ConfigureAwait(&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    continueOnCapturedContext: &lt;span class=&quot;literal&quot;&gt;false&lt;/span&gt;);&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;// Code here runs without the original&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;  &lt;span class=&quot;comment&quot;&gt;// context (in this case, on the thread pool).&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;#125;&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;You can definitely see here that we are denying to run the rest of the async method after the await in the same context. Now it would use a thread pool synchrnizing context for your code and esssentially would make your code deadlock free and a tad smoother. Very handy for UWP app people. &lt;/p&gt;
+&lt;h4 id=&quot;Warning&quot;&gt;&lt;a href=&quot;#Warning&quot; class=&quot;headerlink&quot; title=&quot;Warning&quot;&gt;&lt;/a&gt;Warning&lt;/h4&gt;&lt;p&gt;For GUI people, dont use ConfigureAwait everywhere! Please only use it when the rest of the code doesnt handle any GUI events (databound update, GUI updates) and for 
+ASP.net people, dont use it if the rest of the code uses HttpContext of that time. &lt;/p&gt;
+&lt;p&gt;And finally, If you&amp;#39;re not a TLDR; guy and need more please read &lt;a href=&quot;https://msdn.microsoft.com/en-us/magazine/jj991977.aspx&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;this&lt;/a&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;Tip-Dont-go-for-Async-Void&quot;&gt;&lt;a href=&quot;#Tip-Dont-go-for-Async-Void&quot; class=&quot;headerlink&quot; title=&quot;Tip: Dont go for Async Void&quot;&gt;&lt;/a&gt;Tip: Do
+    
+    </summary>
+    
+      <category term="C#" scheme="http://nerdcats.github.io/categories/C/"/>
+    
+    
+      <category term="CSharp" scheme="http://nerdcats.github.io/tags/CSharp/"/>
+    
+      <category term="Async" scheme="http://nerdcats.github.io/tags/Async/"/>
+    
+      <category term="CheatSheet" scheme="http://nerdcats.github.io/tags/CheatSheet/"/>
+    
+  </entry>
+  
+</feed>
